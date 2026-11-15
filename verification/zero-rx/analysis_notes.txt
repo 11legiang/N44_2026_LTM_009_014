@@ -1,0 +1,17 @@
+KẾT QUẢ TỔNG HỢP (tự động; không phải kết luận TCP/UDP hơn kém)
+Chế độ: zero-rx; số lượt hợp lệ: 1/1.
+Mỗi lượt chạy là một mẫu thống kê, không coi từng gói tin là mẫu độc lập.
+aggregate.csv: trung bình, độ lệch chuẩn mẫu, CI 95% Student-t giữa các lượt.
+CI này xấp xỉ; ít lượt, dữ liệu lệch hoặc PDR sát 0/100% có thể làm CI kém tin cậy.
+Không cắt CI về 0..100; đầu mút vượt miền là giới hạn của cách xấp xỉ, không phải PDR hợp lệ.
+n_valid < n_runs ở delay: bỏ các lượt không nhận gói khỏi phép tính độ trễ, ghi rõ n_missing.
+Lượt có gửi nhưng nhận 0 vẫn được tính trong PDR, loss và goodput.
+paired_differences.csv: hiệu TCP trừ UDP theo cùng seed/run; không kết luận chỉ bằng việc các CI riêng chồng nhau.
+TCP PDR/delay tại IP tính các lần truyền lại và gói điều khiển cùng chiều; không phải độ tin cậy/độ trễ ứng dụng.
+goodput_active_kbps: byte ứng dụng nhận trong cửa sổ gửi / thời gian cửa sổ; Kbps = 1000 bit/s.
+throughput_ip_kbps: byte gồm IP header nhận đến cutoff / (duration + cleanup).
+Chuyển động là điều kiện mô phỏng; ma trận chính không tách riêng ảnh hưởng chuyển động.
+Tải yêu cầu mỗi trạm cố định: số trạm tăng làm tăng cả tổng tải yêu cầu và mức tranh chấp.
+UDP, 1 trạm: 1 lượt, 1 lượt không nhận gói IP.
+  CẢNH BÁO: 1 trường hợp trạm/run nhận 0 byte ứng dụng; phải xem result-flows.csv.
+  CẢNH BÁO: 1 lượt chưa đủ liên kết STA/AP lúc bắt đầu gửi.

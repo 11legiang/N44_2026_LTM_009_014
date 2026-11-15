@@ -1,0 +1,2 @@
+Waf: Entering directory `/home/giang/ns-allinone-3.35/ns-3.35/build'
+DONE transport=udp stations=5 run=4 txIP=18310 rxIP=18249 PDR_IP=99.6668487165% activeGoodput=4981.83 Kbps

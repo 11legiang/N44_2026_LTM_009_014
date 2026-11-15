@@ -1,0 +1,38 @@
+Waf: Entering directory `/home/giang/ns-allinone-3.35/ns-3.35/build'
+[485/972] Compiling src/wifi/model/ap-wifi-mac.cc
+[498/972] Compiling src/wifi/model/qos-frame-exchange-manager.cc
+[961/972] Compiling src/wifi/model/wifi-remote-station-manager.cc
+[962/972] Compiling src/wifi/model/wifi-default-ack-manager.cc
+[963/972] Compiling src/wifi/model/wifi-phy.cc
+[964/972] Compiling scratch/wifi-transport-study.cc
+[965/972] Linking build/lib/libns3.35-wifi-debug.so
+[966/972] Linking build/lib/libns3.35-dsr-debug.so
+[967/972] Linking build/lib/libns3.35-mesh-debug.so
+[968/972] Linking build/lib/libns3.35-wave-debug.so
+[969/972] Linking build/lib/libns3.35-aodv-debug.so
+[970/972] Linking build/lib/libns3.35-test-debug.so
+[971/972] Linking build/lib/libns3.35-netanim-debug.so
+[972/972] Linking build/scratch/wifi-transport-study
+Waf: Leaving directory `/home/giang/ns-allinone-3.35/ns-3.35/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (20.924s)
+
+Modules built:
+antenna                   aodv                      applications
+bridge                    buildings                 config-store
+core                      csma                      csma-layout
+dsdv                      dsr                       energy
+fd-net-device             flow-monitor              internet
+internet-apps             lr-wpan                   lte
+mesh                      mobility                  netanim
+network                   nix-vector-routing        olsr
+point-to-point            point-to-point-layout     propagation
+sixlowpan                 spectrum                  stats
+tap-bridge                test (no Python)          topology-read
+traffic-control           uan                       virtual-net-device
+wave                      wifi                      wimax
+
+Modules not built (see ns-3 tutorial for explanation):
+brite                     click                     dpdk-net-device
+mpi                       openflow                  visualizer
+

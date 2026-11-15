@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Capture files and local editor files
+*.pcap
+*.pcapng
+.vscode/
+.idea/
+*.swp
+
+# Publish only the final experiment; keep its source/configuration/logs
+/results/*
+!/results/final-01/
+/results/final-01/failed-attempts/
+
+# Local distribution notes and original ZIP checksum list
+/START_HERE.txt
+/VISUAL_UPDATE.txt
+/SHA256SUMS.txt
+
+# Downloaded archives
+/*.zip

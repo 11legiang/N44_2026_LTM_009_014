@@ -1,0 +1,11 @@
+usage: run.py [-h] [--ns3 NS3] [--out OUT] [--resume] [--runs RUNS]
+              [--stations STATIONS [STATIONS ...]]
+              [--transport {tcp,udp} [{tcp,udp} ...]] [--seed SEED]
+              [--run-start RUN_START] [--duration DURATION]
+              [--cleanup CLEANUP] [--start START] [--rate-mbps RATE_MBPS]
+              [--packet-size PACKET_SIZE] [--half-side HALF_SIDE]
+              [--speed SPEED] [--mobility {moving,static}]
+              [--tx-power TX_POWER] [--jobs JOBS] [--timeout TIMEOUT] [--xml]
+              [--pcap] [--visual]
+              {smoke,pilot,matrix,single}
+run.py: error: Cannot mix different code/settings in a resumed run: cleanup

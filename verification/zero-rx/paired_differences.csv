@@ -1,0 +1,7 @@
+stations,metric,difference,n_valid,mean,sd,ci95_half,ci95_low,ci95_high
+1,pdr_ip_pct,TCP minus UDP,0,,,,,
+1,loss_ip_pct,TCP minus UDP,0,,,,,
+1,unreceived_ip_packets,TCP minus UDP,0,,,,,
+1,delay_ip_ms,TCP minus UDP,0,,,,,
+1,throughput_ip_kbps,TCP minus UDP,0,,,,,
+1,goodput_active_kbps,TCP minus UDP,0,,,,,

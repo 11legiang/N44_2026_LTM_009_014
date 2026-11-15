@@ -1,0 +1,2 @@
+PASS: actual zero-RX simulation: PDR=0, loss=100%, delay blank, valid result with warnings
+PASS: optional NetAnim XML created and parsed; GUI not tested

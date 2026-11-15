@@ -1,0 +1,4 @@
+PASS: real SIGINT mid-second case; resume preserved first CSV and completed second
+PASS: resume refuses changed cleanup
+PASS: timeout reported as failed run
+PASS: analyzer refuses corrupt packet ratio

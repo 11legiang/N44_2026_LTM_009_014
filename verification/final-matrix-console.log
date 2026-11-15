@@ -1,0 +1,69 @@
+Kết quả: /workspace/scratch/8b6fd8784cbf/wifi-tcp-udp-ns335/verification/final-matrix
+Đang biên dịch; log: build.log
+[1/30] UDP / 5 trạm / run 1
+  PDR(IP)=100.00% | goodput=4998.49 Kbps
+[2/30] TCP / 5 trạm / run 1
+  PDR(IP)=100.00% | goodput=4998.49 Kbps
+[3/30] UDP / 5 trạm / run 2
+  PDR(IP)=100.00% | goodput=4998.49 Kbps
+[4/30] TCP / 5 trạm / run 2
+  PDR(IP)=100.00% | goodput=4998.49 Kbps
+[5/30] UDP / 5 trạm / run 3
+  PDR(IP)=99.77% | goodput=4986.74 Kbps
+[6/30] TCP / 5 trạm / run 3
+  PDR(IP)=99.72% | goodput=4998.49 Kbps
+[7/30] UDP / 5 trạm / run 4
+  PDR(IP)=99.67% | goodput=4981.83 Kbps
+[8/30] TCP / 5 trạm / run 4
+  PDR(IP)=99.48% | goodput=4998.49 Kbps
+[9/30] UDP / 5 trạm / run 5
+  PDR(IP)=100.00% | goodput=4998.49 Kbps
+[10/30] TCP / 5 trạm / run 5
+  PDR(IP)=100.00% | goodput=4998.49 Kbps
+[11/30] UDP / 10 trạm / run 1
+  PDR(IP)=99.89% | goodput=9986.32 Kbps
+[12/30] TCP / 10 trạm / run 1
+  PDR(IP)=99.48% | goodput=9995.06 Kbps
+[13/30] UDP / 10 trạm / run 2
+  PDR(IP)=99.54% | goodput=9951.37 Kbps
+[14/30] TCP / 10 trạm / run 2
+  PDR(IP)=99.49% | goodput=9844.33 Kbps
+[15/30] UDP / 10 trạm / run 3
+  PDR(IP)=95.81% | goodput=9578.09 Kbps
+[16/30] TCP / 10 trạm / run 3
+  PDR(IP)=98.87% | goodput=9218.73 Kbps
+[17/30] UDP / 10 trạm / run 4
+  PDR(IP)=95.72% | goodput=9566.34 Kbps
+[18/30] TCP / 10 trạm / run 4
+  PDR(IP)=99.03% | goodput=8941.29 Kbps
+[19/30] UDP / 10 trạm / run 5
+  PDR(IP)=99.75% | goodput=9971.85 Kbps
+[20/30] TCP / 10 trạm / run 5
+  PDR(IP)=99.33% | goodput=9996.15 Kbps
+[21/30] UDP / 20 trạm / run 1
+  PDR(IP)=52.31% | goodput=10286.42 Kbps
+[22/30] TCP / 20 trạm / run 1
+  PDR(IP)=99.88% | goodput=12002.65 Kbps
+[23/30] UDP / 20 trạm / run 2
+  PDR(IP)=56.39% | goodput=11093.06 Kbps
+[24/30] TCP / 20 trạm / run 2
+  PDR(IP)=99.84% | goodput=12202.26 Kbps
+[25/30] UDP / 20 trạm / run 3
+  PDR(IP)=51.33% | goodput=10089.54 Kbps
+[26/30] TCP / 20 trạm / run 3
+  PDR(IP)=99.69% | goodput=11773.54 Kbps
+[27/30] UDP / 20 trạm / run 4
+  PDR(IP)=52.86% | goodput=10413.94 Kbps
+[28/30] TCP / 20 trạm / run 4
+  PDR(IP)=99.56% | goodput=11928.64 Kbps
+[29/30] UDP / 20 trạm / run 5
+  PDR(IP)=53.78% | goodput=10591.44 Kbps
+[30/30] TCP / 20 trạm / run 5
+  PDR(IP)=99.82% | goodput=11929.19 Kbps
+Hoàn tất: 30 thành công, 0 lỗi. Thư mục: /workspace/scratch/8b6fd8784cbf/wifi-tcp-udp-ns335/verification/final-matrix
+Vẽ biểu đồ: python3 scripts/analyze.py /workspace/scratch/8b6fd8784cbf/wifi-tcp-udp-ns335/verification/final-matrix
+Đã tạo aggregate.csv, paired_differences.csv, comparison.png/.pdf, analysis_notes.txt
+/workspace/scratch/8b6fd8784cbf/wifi-tcp-udp-ns335/verification/final-matrix
+
+ĐÃ XONG. Mở biểu đồ: verification/final-matrix/comparison.png
+Đọc aggregate.csv và analysis_notes.txt cùng biểu đồ.

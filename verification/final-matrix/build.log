@@ -1,0 +1,25 @@
+/workspace/scratch/8b6fd8784cbf/tmp/ns-allinone-3.35/ns-3.35/bindings/python/wscript:321: SyntaxWarning: invalid escape sequence '\d'
+  m = re.match( "^castxml version (\d\.\d)(-)?(\w+)?", castxml_version_line)
+Waf: Entering directory `/workspace/scratch/8b6fd8784cbf/tmp/ns-allinone-3.35/ns-3.35/build'
+[857/859] Linking build/lib/libns3.35-netanim-optimized.so
+[858/859] Compiling scratch/wifi-transport-study.cc
+[859/859] Linking build/scratch/wifi-transport-study
+Waf: Leaving directory `/workspace/scratch/8b6fd8784cbf/tmp/ns-allinone-3.35/ns-3.35/build'
+Build commands will be stored in build/compile_commands.json
+'build' finished successfully (7.550s)
+
+Modules built:
+antenna                   applications              bridge
+buildings                 config-store              core
+csma                      energy                    fd-net-device
+flow-monitor              internet                  lr-wpan
+lte                       mobility                  netanim
+network                   point-to-point            point-to-point-layout
+propagation               spectrum                  stats
+traffic-control           uan                       virtual-net-device
+wave                      wifi                      wimax
+
+Modules not built (see ns-3 tutorial for explanation):
+brite                     click                     dpdk-net-device
+mpi                       openflow                  visualizer
+

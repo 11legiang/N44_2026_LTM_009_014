@@ -1,0 +1,4 @@
+/workspace/scratch/8b6fd8784cbf/tmp/ns-allinone-3.35/ns-3.35/bindings/python/wscript:321: SyntaxWarning: invalid escape sequence '\d'
+  m = re.match( "^castxml version (\d\.\d)(-)?(\w+)?", castxml_version_line)
+Waf: Entering directory `/workspace/scratch/8b6fd8784cbf/tmp/ns-allinone-3.35/ns-3.35/build'
+DONE transport=udp stations=5 run=1 txIP=18310 rxIP=18310 PDR_IP=100% activeGoodput=4998.49 Kbps

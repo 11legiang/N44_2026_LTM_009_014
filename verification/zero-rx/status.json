@@ -1,0 +1,11 @@
+[
+  {
+    "case": "udp-n1-r1",
+    "status": "ok",
+    "message": "",
+    "warnings": [
+      "1 trạm không nhận byte ứng dụng",
+      "chưa đủ liên kết STA/AP ở thời điểm bắt đầu"
+    ]
+  }
+]

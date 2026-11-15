@@ -1,0 +1,1 @@
+DONE transport=udp stations=5 run=1 txIP=1220 rxIP=1220 PDR_IP=100% activeGoodput=4980.74 Kbps

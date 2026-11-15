@@ -1,0 +1,7 @@
+Kết quả: /workspace/scratch/8b6fd8784cbf/tmp/final-wifi/interrupt-resume
+Đang biên dịch; log: build.log
+[1/2] UDP / 5 trạm / run 1
+  PDR(IP)=100.00% | goodput=4980.74 Kbps
+[2/2] TCP / 5 trạm / run 1
+
+Đã lưu tiến độ. Chạy lại cùng lệnh và thêm --resume.

@@ -1,0 +1,63 @@
+{
+  "mode": "zero-rx",
+  "ns3": "/workspace/scratch/8b6fd8784cbf/tmp/ns-allinone-3.35/ns-3.35",
+  "out": "/workspace/scratch/8b6fd8784cbf/wifi-tcp-udp-ns335/verification/zero-rx",
+  "resume": true,
+  "runs": 1,
+  "stations": [
+    1
+  ],
+  "transport": [
+    "udp"
+  ],
+  "seed": 12345,
+  "run_start": 1,
+  "duration": 2,
+  "cleanup": 1,
+  "start": 3,
+  "rate_mbps": 1,
+  "packet_size": 1024,
+  "half_side": 25,
+  "speed": 1.5,
+  "mobility": "moving",
+  "tx_power": -100,
+  "jobs": 2,
+  "timeout": 900,
+  "xml": false,
+  "pcap": false,
+  "visual": false,
+  "ns3_version": "3.35",
+  "source_sha256": "254fa75517ac73f1a46b59c439bbec67e25e59e26576c9a59ac305f7eddf49a2",
+  "release": "2026-11-15-final",
+  "core_patch": {
+    "patch_id": "ns335-wifi-two-fixes-v1",
+    "backup": null,
+    "files": {
+      "frame-exchange-manager.cc": "c13542b8dca583cf96f55b2171be3abf77758858f183622f8dbf15d241fa1b3a",
+      "ap-wifi-mac.cc": "243d2b45a9c06d1c325091787f424d5828e3b31690f352d6024f55cc954918eb",
+      "ap-wifi-mac.h": "0d96c83acc400e24867a91d0f59960c0bec4fce9556e7212f7b595a239e7699d"
+    }
+  },
+  "created_utc": "2026-11-15T02:19:10.327269+00:00",
+  "argv": [
+    "scripts/run.py",
+    "matrix",
+    "--runs",
+    "5",
+    "--run-start",
+    "1",
+    "--duration",
+    "30",
+    "--cleanup",
+    "10",
+    "--ns3",
+    "/workspace/scratch/8b6fd8784cbf/tmp/ns-allinone-3.35/ns-3.35",
+    "--out",
+    "verification/final-matrix",
+    "--resume"
+  ],
+  "platform": "linux",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "build_config_sha256": "f05033de75d851e26c442de98f07c65ce8995c53f6e73c56d2008479e7c9c33e",
+  "diagnostic_invocation": "Direct compiled binary, same core/build as final-matrix"
+}

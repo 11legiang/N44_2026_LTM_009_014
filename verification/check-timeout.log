@@ -1,0 +1,6 @@
+Kết quả: /workspace/scratch/8b6fd8784cbf/tmp/final-wifi/timeout
+Đang biên dịch; log: build.log
+[1/1] UDP / 1 trạm / run 1
+  LỖI: Command '['/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3', '/workspace/scratch/8b6fd8784cbf/tmp/ns-allinone-3.35/ns-3.35/waf', '--run-no-build', 'wifi-transport-study --stations=1 --transport=udp --seed=12345 --run=1 --duration=10000.0 --cleanup=0.0 --start=3 --rateMbps=1 --packetSize=1024 --halfSide=25 --speed=1.5 --mobility=moving --txPower=16 --output=/workspace/scratch/8b6fd8784cbf/tmp/final-wifi/timeout/udp-n1-r1/result --xml=0 --pcap=0 --visual=0']' timed out after 1 seconds
+Hoàn tất: 0 thành công, 1 lỗi. Thư mục: /workspace/scratch/8b6fd8784cbf/tmp/final-wifi/timeout
+Vẽ biểu đồ: python3 scripts/analyze.py /workspace/scratch/8b6fd8784cbf/tmp/final-wifi/timeout

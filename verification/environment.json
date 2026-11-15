@@ -1,0 +1,28 @@
+{
+  "BUILD_PROFILE": "optimized",
+  "CXX": [
+    "/usr/bin/g++"
+  ],
+  "CXXFLAGS": [
+    "-O2",
+    "-include",
+    "cstdint",
+    "-march=native",
+    "-fstrict-overflow",
+    "-Wstrict-overflow=2",
+    "-std=c++17"
+  ],
+  "DEFINES": [
+    "NS3_BUILD_PROFILE_OPTIMIZED",
+    "NS3_ASSERT_ENABLE",
+    "HAVE_SYS_IOCTL_H=1",
+    "HAVE_IF_NETS_H=1",
+    "HAVE_NET_ETHERNET_H=1",
+    "HAVE_PACKET_H=1",
+    "HAVE_SEMAPHORE_H=1",
+    "HAVE_IF_TUN_H=1"
+  ],
+  "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "notes": "Linux local validation; asserts enabled; no GUI test on user WSL."
+}

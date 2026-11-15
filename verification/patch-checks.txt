@@ -1,0 +1,7 @@
+PASS: transform on official ns-allinone-3.35 source: all three intended files changed.
+PASS: already fully patched source: no changes (idempotent).
+PASS: earlier collision fix present, association fix absent: applies only missing fix.
+PASS: inconsistent/partial AP callback patch: rejected before writing.
+PASS: repair created byte-equivalent backups of all three original files.
+PASS: second repair call did not create another backup or modify sources.
+References and exact unified diff: ../patches/ns335-wifi-fixes.patch.

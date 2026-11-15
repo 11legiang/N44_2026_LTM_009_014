@@ -1,0 +1,2 @@
+transport,stations,seed,run,station,x_start_m,y_start_m,x_end_m,y_end_m
+udp,1,12345,1,0,15.3837431542,7.55630161513,11.5560177146,9.50332287248

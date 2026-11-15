@@ -1,0 +1,50 @@
+--- a/src/wifi/model/frame-exchange-manager.cc
++++ b/src/wifi/model/frame-exchange-manager.cc
+@@ -859,7 +859,11 @@
+ 
+   if (mpdu != nullptr)
+     {
+-      m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
++      if (mpdu->GetHeader ().HasData ()
++          && !mpdu->GetHeader ().GetAddr1 ().IsGroup ())
++        {
++          m_mac->GetWifiRemoteStationManager ()->ReportDataFailed (mpdu);
++        }
+ 
+       if (!mpdu->GetHeader ().GetAddr1 ().IsGroup ()
+           && !m_mac->GetWifiRemoteStationManager ()->NeedRetransmission (mpdu))
+--- a/src/wifi/model/ap-wifi-mac.cc
++++ b/src/wifi/model/ap-wifi-mac.cc
+@@ -962,9 +962,9 @@
+ }
+ 
+ void
+-ApWifiMac::TxFailed (uint8_t timeoutReason, Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector)
+-{
+-  NS_LOG_FUNCTION (this << +timeoutReason << *mpdu << txVector);
++ApWifiMac::TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMacQueueItem> mpdu)
++{
++  NS_LOG_FUNCTION (this << +timeoutReason << *mpdu);
+   const WifiMacHeader& hdr = mpdu->GetHeader ();
+ 
+   if ((hdr.IsAssocResp () || hdr.IsReassocResp ())
+@@ -1420,7 +1420,7 @@
+         }
+     }
+   NS_ABORT_IF (!TraceConnectWithoutContext ("AckedMpdu", MakeCallback (&ApWifiMac::TxOk, this)));
+-  NS_ABORT_IF (!TraceConnectWithoutContext ("MpduResponseTimeout", MakeCallback (&ApWifiMac::TxFailed, this)));
++  NS_ABORT_IF (!TraceConnectWithoutContext ("DroppedMpdu", MakeCallback (&ApWifiMac::TxFailed, this)));
+   RegularWifiMac::DoInitialize ();
+   UpdateShortSlotTimeEnabled ();
+   UpdateShortPreambleEnabled ();
+--- a/src/wifi/model/ap-wifi-mac.h
++++ b/src/wifi/model/ap-wifi-mac.h
+@@ -164,7 +164,7 @@
+    * \param mpdu the MPDU that we failed to sent
+    * \param txVector the TX vector used to send the MPDU
+    */
+-  void TxFailed (uint8_t timeoutReason, Ptr<const WifiMacQueueItem> mpdu, const WifiTxVector& txVector);
++  void TxFailed (WifiMacDropReason timeoutReason, Ptr<const WifiMacQueueItem> mpdu);
+ 
+   /**
+    * This method is called to de-aggregate an A-MSDU and forward the

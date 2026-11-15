@@ -1,0 +1,7 @@
+transport,stations,metric,n_runs,n_missing,zero_rx_runs,n_valid,mean,sd,ci95_half,ci95_low,ci95_high
+udp,1,pdr_ip_pct,1,0,1,1,0.0,,,,
+udp,1,loss_ip_pct,1,0,1,1,100.0,,,,
+udp,1,unreceived_ip_packets,1,0,1,1,244.0,,,,
+udp,1,delay_ip_ms,1,1,1,0,,,,,
+udp,1,throughput_ip_kbps,1,0,1,1,0.0,,,,
+udp,1,goodput_active_kbps,1,0,1,1,0.0,,,,

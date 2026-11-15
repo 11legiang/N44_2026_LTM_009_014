@@ -1,0 +1,37 @@
+{
+  "options": {
+    "stations": 5,
+    "transport": "udp",
+    "seed": 12345,
+    "run": 1,
+    "duration": 30.0,
+    "cleanup": 10.0,
+    "start": 3,
+    "rateMbps": 1,
+    "packetSize": 1024,
+    "halfSide": 25,
+    "speed": 1.5,
+    "mobility": "moving",
+    "txPower": 16,
+    "output": "/home/giang/wifi-final/wifi-tcp-udp-ns335/results/final-01/udp-n5-r1/result",
+    "xml": 0,
+    "pcap": 0,
+    "visual": 0
+  },
+  "command": [
+    "/home/giang/wifi-final/wifi-tcp-udp-ns335/.venv/bin/python",
+    "/home/giang/ns-allinone-3.35/ns-3.35/waf",
+    "--run-no-build",
+    "wifi-transport-study --stations=5 --transport=udp --seed=12345 --run=1 --duration=30.0 --cleanup=10.0 --start=3 --rateMbps=1 --packetSize=1024 --halfSide=25 --speed=1.5 --mobility=moving --txPower=16 --output=/home/giang/wifi-final/wifi-tcp-udp-ns335/results/final-01/udp-n5-r1/result --xml=0 --pcap=0 --visual=0"
+  ],
+  "source_sha256": "254fa75517ac73f1a46b59c439bbec67e25e59e26576c9a59ac305f7eddf49a2",
+  "core_patch": {
+    "patch_id": "ns335-wifi-two-fixes-v1",
+    "backup": "/home/giang/ns-allinone-3.35/ns-3.35/backup-wifi-study-20261115-153008-155862",
+    "files": {
+      "frame-exchange-manager.cc": "c13542b8dca583cf96f55b2171be3abf77758858f183622f8dbf15d241fa1b3a",
+      "ap-wifi-mac.cc": "243d2b45a9c06d1c325091787f424d5828e3b31690f352d6024f55cc954918eb",
+      "ap-wifi-mac.h": "0d96c83acc400e24867a91d0f59960c0bec4fce9556e7212f7b595a239e7699d"
+    }
+  }
+}
