@@ -168,6 +168,34 @@ Kiểm thử ở môi trường chuẩn bị mã gồm ma trận 30 lượt vớ
 - Chưa đo độ trễ thông điệp ở tầng ứng dụng hoặc phân rã nguyên nhân mất gói bằng trace MAC/PHY.
 - XML NetAnim đã được kiểm tra xuất/đọc ở môi trường chuẩn bị mã; GUI trên WSL phụ thuộc máy chạy.
 
+## Các nâng cấp mở rộng (Socket + Ablation + Web Monitor)
+
+### Gói 1 — Custom Binary-Framed `ns3::Socket` Application (`--appMode=socket`)
+- Bổ sung `CustomSocketSender` và `CustomSocketReceiver` trong `src/wifi-transport-study.cc`, sử dụng khung tin nhị phân **24-byte Big-Endian Header** (`Magic "N4" | Ver | Type | StationId | PayloadLen | SeqNum | TxTimeNs | CRC32`).
+- Giải quyết bài toán tách/gộp luồng byte trên TCP (`m_tcpBuffers`), xử lý áp lực bộ đệm gửi (`GetTxAvailable` + `SetSendCallback`) và đo trực tiếp **App E2E Delay, Jitter, CRC32 và gói sai thứ tự** (`schema_version=3`), đồng thời giữ nguyên `--appMode=onoff` (`schema_version=2`) làm baseline tương thích ngược.
+
+### Gói 2 — Cô lập biến & phân tích công bằng theo trạm
+- `scripts/analyze.py` tính thêm **chỉ số công bằng Jain (`fairness_summary.csv`)**, tương quan khoảng cách tới AP ↔ Goodput (`pearson_dist_goodput`) và xuất biểu đồ `deep_analysis.png/.pdf`.
+- Trên bộ `results/final-01` ở mức 20 trạm: `TCP JFI = 0.8522` (`corr(dist, goodput) = -0.651`), `UDP JFI = 0.9043` (`corr(dist, goodput) = -0.802`).
+- `scripts/run_ablation.py` hỗ trợ chạy ma trận đối chứng trên Ubuntu/WSL có ns-3.35: `moving` vs `static`, `RTS/CTS` bật/tắt, và `TCP NewReno` vs `Cubic` vs `Bbr`:
+
+```bash
+python3 scripts/run_ablation.py --ns3 ~/ns-allinone-3.35/ns-3.35 --runs 3 --out results/ablation-n20
+```
+
+### Gói 3 — Hệ thống Socket Python thực tế & Web Dashboard (`socket_demo/`)
+- `socket_demo/n44_protocol.py`: Định dạng gói 24 byte đồng bộ từng bit với C++.
+- `socket_demo/ap_collector_server.py`: Server thu nhận song song **UDP (`9100`) & TCP (`9101`)** + giao diện **Web Dashboard (`http://127.0.0.1:8080`)** hiển thị radar vùng 50×50 m, hex header 24 byte, độ trễ/jitter realtime và bảng tổng hợp `results/final-01`.
+- `socket_demo/sta_socket_clients.py` & `socket_demo/apply_netem.sh`: Mô phỏng 5/10/20 trạm gửi qua Socket OS thật (kèm cấu hình `tc netem` hoặc profile tái hiện thông số mất gói `46.67%` / trễ `384 ms` từ ns-3):
+
+```bash
+# Terminal 1: Khởi động Dual-Stack Server & Web Dashboard
+python3 socket_demo/ap_collector_server.py
+
+# Terminal 2: Chạy 20 STA gửi TCP & UDP thực tế (hoặc ghép với --liveUdpPort=9100 trong ns-3)
+python3 socket_demo/sta_socket_clients.py --stations 20 --transport both --duration 20
+```
+
 ## Nguồn tham khảo và giấy phép
 
 Cấu trúc AP/STA tham khảo ví dụ `third.cc` của ns-3; đây là tham khảo kiến trúc, không phải baseline hiệu năng cùng cấu hình. Chương trình sử dụng các triển khai TCP/Wi-Fi của ns-3, thêm kịch bản, phép đo và quy trình chạy. Quá trình chuẩn bị mã và tài liệu có sử dụng công cụ AI hỗ trợ.

@@ -31,10 +31,31 @@ def summarize(values, t):
     return dict(n_valid=n, mean=mean, sd=sd, ci95_half=half, ci95_low=mean-half, ci95_high=mean+half)
 
 
+def jain_index(values):
+    s = sum(values)
+    sq = sum(v * v for v in values)
+    if not values or sq <= 0:
+        return 0.0
+    return (s * s) / (len(values) * sq)
+
+
+def pearson_r(xs, ys):
+    n = len(xs)
+    if n < 2:
+        return None
+    mx, my = statistics.mean(xs), statistics.mean(ys)
+    dx = [x - mx for x in xs]
+    dy = [y - my for y in ys]
+    denom = math.sqrt(sum(a * a for a in dx) * sum(b * b for b in dy))
+    if denom <= 0:
+        return None
+    return sum(a * b for a, b in zip(dx, dy)) / denom
+
+
 def write_csv(path, rows):
     if not rows:
         return
-    with path.open('w', newline='') as f:
+    with path.open('w', newline='', encoding='utf-8') as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
@@ -155,6 +176,147 @@ def main():
     fig.savefig(folder/'comparison.png', dpi=180)
     fig.savefig(folder/'comparison.pdf')
     plt.close(fig)
+
+    # --- Deep Per-Station Analysis: Jain's Fairness Index & Distance-to-AP Correlation ---
+    fairness_rows = []
+    station_points = []
+    for r in rows:
+        case_dir = folder/r['case']
+        with (case_dir/'result-flows.csv').open(encoding='utf-8') as ff:
+            fl = list(csv.DictReader(ff))
+        with (case_dir/'result-positions.csv').open(encoding='utf-8') as pf:
+            pos_map = {p['station']: p for p in csv.DictReader(pf)}
+        goodputs = [float(x['goodput_active_kbps']) for x in fl]
+        jfi = jain_index(goodputs)
+        fairness_rows.append(dict(case=r['case'], transport=r['transport'],
+                                  stations=int(r['stations']), run=int(r['run']), jfi=jfi))
+        for x in fl:
+            st = x['station']
+            p = pos_map[st]
+            d_start = math.hypot(float(p['x_start_m']), float(p['y_start_m']))
+            d_end = math.hypot(float(p['x_end_m']), float(p['y_end_m']))
+            d_mean = 0.5 * (d_start + d_end)
+            station_points.append(dict(
+                transport=r['transport'], stations=int(r['stations']), run=int(r['run']),
+                station=int(st), dist_mean_m=d_mean,
+                goodput_active_kbps=float(x['goodput_active_kbps']),
+                pdr_ip_pct=float(x['pdr_ip_pct']) if x['pdr_ip_pct'] != '' else None,
+            ))
+
+    fairness_agg = []
+    for (proto, n), grp in sorted({(x['transport'], x['stations']): [y for y in fairness_rows if y['transport']==x['transport'] and y['stations']==x['stations']] for x in fairness_rows}.items()):
+        jfi_vals = [x['jfi'] for x in grp]
+        sub_pts = [pt for pt in station_points if pt['transport'] == proto and pt['stations'] == n]
+        r_gp = pearson_r([pt['dist_mean_m'] for pt in sub_pts], [pt['goodput_active_kbps'] for pt in sub_pts])
+        pdr_pts = [pt for pt in sub_pts if pt['pdr_ip_pct'] is not None]
+        r_pdr = pearson_r([pt['dist_mean_m'] for pt in pdr_pts], [pt['pdr_ip_pct'] for pt in pdr_pts])
+        fairness_agg.append(dict(
+            transport=proto, stations=n,
+            pearson_dist_goodput=f'{r_gp:.6f}' if r_gp is not None else '',
+            pearson_dist_pdr=f'{r_pdr:.6f}' if r_pdr is not None else '',
+            **summarize(jfi_vals, t),
+        ))
+    write_csv(folder/'fairness_summary.csv', fairness_agg)
+
+    max_n = max(int(r['stations']) for r in rows)
+    fig_deep, (ax_jfi, ax_ecdf, ax_dist) = plt.subplots(1, 3, figsize=(15, 4.6), constrained_layout=True)
+    for proto in ['tcp', 'udp']:
+        pts = sorted([x for x in fairness_agg if x['transport'] == proto], key=lambda x: x['stations'])
+        if pts:
+            xs = [x['stations'] for x in pts]
+            ys = [x['mean'] for x in pts]
+            ax_jfi.plot(xs, ys, marker='o' if proto == 'tcp' else 's',
+                        linestyle='-' if proto == 'tcp' else '--',
+                        fillstyle='none' if proto == 'udp' else 'full',
+                        color=colors[proto], label=proto.upper())
+            for x in pts:
+                if x['ci95_half'] != '':
+                    ax_jfi.errorbar(x['stations'], x['mean'], yerr=x['ci95_half'], fmt='none', capsize=4, color=colors[proto])
+    ax_jfi.set_title("Jain's Fairness Index (Goodput)", fontsize=10)
+    ax_jfi.set_xlabel('Number of sending stations')
+    ax_jfi.set_ylabel('JFI (0..1, 1 = perfectly fair)')
+    ax_jfi.set_ylim(0.5, 1.05)
+    ax_jfi.set_xticks(sorted({int(r['stations']) for r in rows}))
+    ax_jfi.grid(alpha=0.2)
+    ax_jfi.legend()
+
+    for proto in ['tcp', 'udp']:
+        gps = sorted(pt['goodput_active_kbps'] for pt in station_points if pt['transport'] == proto and pt['stations'] == max_n)
+        if gps:
+            ys = [(idx + 1) / len(gps) for idx in range(len(gps))]
+            ax_ecdf.step(gps, ys, where='post', color=colors[proto],
+                         linestyle='-' if proto == 'tcp' else '--',
+                         label=f"{proto.upper()} (n={len(gps)} flows)")
+    ax_ecdf.set_title(f'Per-Station Goodput ECDF (N={max_n})', fontsize=10)
+    ax_ecdf.set_xlabel('Station active goodput (Kbps)')
+    ax_ecdf.set_ylabel('Cumulative fraction')
+    ax_ecdf.grid(alpha=0.2)
+    ax_ecdf.legend()
+
+    for proto in ['tcp', 'udp']:
+        sub = [pt for pt in station_points if pt['transport'] == proto and pt['stations'] == max_n]
+        if sub:
+            dx = [pt['dist_mean_m'] for pt in sub]
+            gy = [pt['goodput_active_kbps'] for pt in sub]
+            ax_dist.scatter(dx, gy, alpha=0.55, s=22, color=colors[proto],
+                            marker='o' if proto == 'tcp' else 'x', label=proto.upper())
+            # Linear fit via ordinary least squares
+            mx, my = statistics.mean(dx), statistics.mean(gy)
+            denom = sum((x - mx) ** 2 for x in dx)
+            if denom > 0:
+                slope = sum((x - mx) * (y - my) for x, y in zip(dx, gy)) / denom
+                intercept = my - slope * mx
+                x0, x1 = min(dx), max(dx)
+                ax_dist.plot([x0, x1], [slope * x0 + intercept, slope * x1 + intercept],
+                             color=colors[proto], linestyle='-' if proto == 'tcp' else '--', linewidth=1.6)
+    ax_dist.set_title(f'Distance to AP vs Station Goodput (N={max_n})', fontsize=10)
+    ax_dist.set_xlabel('Mean distance to AP (m)')
+    ax_dist.set_ylabel('Station active goodput (Kbps)')
+    ax_dist.grid(alpha=0.2)
+    ax_dist.legend()
+
+    fig_deep.suptitle(f'Per-Station Fairness & Spatial Dependency — {mode}', fontsize=12)
+    fig_deep.savefig(folder/'deep_analysis.png', dpi=180)
+    fig_deep.savefig(folder/'deep_analysis.pdf')
+    plt.close(fig_deep)
+
+    # --- Optional Schema v3 Custom Socket App-Layer Plot ---
+    has_v3 = all(r.get('schema_version') == '3' and r.get('app_mode') == 'socket' for r in rows)
+    if has_v3:
+        v3_metrics = {
+            'app_pdr_pct': ('Application Frame Delivery Ratio', '%'),
+            'app_delay_ms': ('True Application E2E Delay (Reassembled)', 'ms'),
+            'app_jitter_ms': ('Application Delay Jitter', 'ms'),
+        }
+        v3_agg = []
+        for (proto, stations), records in sorted(groups.items()):
+            for m in v3_metrics:
+                vals = [float(r[m]) for r in records if r.get(m, '') != '']
+                v3_agg.append(dict(transport=proto, stations=stations, metric=m, **summarize(vals, t)))
+        write_csv(folder/'app_layer_aggregate.csv', v3_agg)
+        fig_app, axes_app = plt.subplots(1, 3, figsize=(15, 4.4), constrained_layout=True)
+        for ax, (m, (title, unit)) in zip(axes_app, v3_metrics.items()):
+            for proto in ['tcp', 'udp']:
+                pts = sorted([x for x in v3_agg if x['transport'] == proto and x['metric'] == m and x['mean'] != ''], key=lambda x: x['stations'])
+                if pts:
+                    ax.plot([x['stations'] for x in pts], [x['mean'] for x in pts],
+                            marker='o' if proto == 'tcp' else 's',
+                            linestyle='-' if proto == 'tcp' else '--',
+                            color=colors[proto], label=proto.upper())
+                    for x in pts:
+                        if x['ci95_half'] != '':
+                            ax.errorbar(x['stations'], x['mean'], yerr=x['ci95_half'], fmt='none', capsize=4, color=colors[proto])
+            ax.set_title(title, fontsize=10)
+            ax.set_xlabel('Number of sending stations')
+            ax.set_ylabel(unit)
+            ax.set_xticks(sorted({int(r['stations']) for r in rows}))
+            ax.grid(alpha=0.2)
+            ax.legend()
+        fig_app.suptitle(f'Custom 24B-Framed Socket Application Metrics — {mode}', fontsize=12)
+        fig_app.savefig(folder/'app_layer_comparison.png', dpi=180)
+        fig_app.savefig(folder/'app_layer_comparison.pdf')
+        plt.close(fig_app)
+
     notes = [
         'KẾT QUẢ TỔNG HỢP (tự động; không phải kết luận TCP/UDP hơn kém)',
         f"Chế độ: {config['mode']}; số lượt hợp lệ: {len(rows)}/{expected}.",
@@ -180,10 +342,15 @@ def main():
         unready = sum(int(r.get('associated_pairs_at_start', n)) < n for r in records)
         if unready:
             notes.append(f'  CẢNH BÁO: {unready} lượt chưa đủ liên kết STA/AP lúc bắt đầu gửi.')
+    notes.append('--- CÔNG BẰNG JAIN (JFI) VÀ TƯƠNG QUAN KHOẢNG CÁCH ---')
+    for fa in fairness_agg:
+        notes.append(f"{fa['transport'].upper()}, {fa['stations']} trạm: JFI mean={float(fa['mean']):.4f}"
+                     + (f" (±{float(fa['ci95_half']):.4f})" if fa['ci95_half'] != '' else '')
+                     + f", corr(dist, goodput)={fa['pearson_dist_goodput']}.")
     if incomplete:
         notes.append('CẢNH BÁO: thiếu lượt/lượt lỗi. Không dùng như ma trận hoàn chỉnh.')
     (folder/'analysis_notes.txt').write_text('\n'.join(notes)+'\n', encoding='utf-8')
-    print('Đã tạo aggregate.csv, paired_differences.csv, comparison.png/.pdf, analysis_notes.txt')
+    print('Đã tạo aggregate.csv, paired_differences.csv, fairness_summary.csv, comparison.png/.pdf, deep_analysis.png/.pdf, analysis_notes.txt')
     print(folder)
 
 if __name__ == '__main__':

@@ -93,6 +93,18 @@ def validate(prefix, stations):
             sum(float(f['delay_ip_ms'] or 0)*int(f['rx_ip_packets']) for f in flows)/rx,
             rel_tol=1e-8, abs_tol=1e-8):
         raise ValueError('Incorrect weighted mean delay')
+    if r.get('schema_version') == '3':
+        if 'jains_fairness_active' in r and r['jains_fairness_active'] != '':
+            jfi = float(r['jains_fairness_active'])
+            if not (0.0 <= jfi <= 1.0 + 1e-8):
+                raise ValueError('Invalid Jain fairness index')
+        for item in [r] + flows:
+            ftx, frx = int(item['app_frames_tx']), int(item['app_frames_rx'])
+            fcrc, fooo = int(item['app_frames_crc_ok']), int(item['app_frames_out_of_order'])
+            if not (0 <= frx <= ftx and 0 <= fcrc <= frx and 0 <= fooo <= frx):
+                raise ValueError('Invalid application frame counters')
+            if (frx == 0) != (item['app_delay_ms'] == ''):
+                raise ValueError('Invalid app_delay_ms availability')
     return r
 
 
@@ -154,6 +166,12 @@ def main():
     p.add_argument('--half-side', type=float, default=25)
     p.add_argument('--speed', type=float, default=1.5)
     p.add_argument('--mobility', choices=['moving', 'static'], default='moving')
+    p.add_argument('--app-mode', choices=['onoff', 'socket'], default='onoff',
+                   help='onoff (baseline schema v2) or socket (24B binary header, schema v3)')
+    p.add_argument('--tcp-variant', choices=['NewReno', 'Cubic', 'Bbr'], default='NewReno')
+    p.add_argument('--rts-cts', action='store_true', help='Enable Wi-Fi RTS/CTS (threshold=500B)')
+    p.add_argument('--live-udp-host', default='127.0.0.1')
+    p.add_argument('--live-udp-port', type=int, default=0, help='Optional live UDP telemetry sink port')
     p.add_argument('--tx-power', type=float, default=16)
     p.add_argument('--jobs', type=int, default=2, help='Compiler jobs; simulations run sequentially')
     p.add_argument('--timeout', type=int, default=900, help='Wall-clock timeout per simulation, seconds')
@@ -210,7 +228,7 @@ def main():
     config['build_config_sha256'] = hashlib.sha256(cache.read_bytes()).hexdigest() if cache.exists() else None
     if existing:
         previous = json.loads((out/'experiment.json').read_text())
-        ignored = {'out','resume','created_utc','argv','jobs','timeout','python','platform','core_patch'}
+        ignored = {'out','resume','created_utc','argv','jobs','timeout','python','platform','core_patch','live_udp_host','live_udp_port'}
         different = [k for k in config if k not in ignored and config[k] != previous.get(k)]
         if core['files'] != previous.get('core_patch', {}).get('files'):
             different.append('ns-3 core source hashes')
@@ -267,11 +285,15 @@ def main():
             archive.mkdir(exist_ok=True)
             case.rename(archive/(case.name+'-'+stamp))
         case.mkdir()
-        options = dict(stations=n, transport=proto, seed=a.seed, run=run, duration=duration,
+        options = dict(stations=n, transport=proto, appMode=a.app_mode,
+                       tcpVariant=a.tcp_variant, rtsCts=int(a.rts_cts),
+                       seed=a.seed, run=run, duration=duration,
                        cleanup=a.cleanup, start=a.start, rateMbps=a.rate_mbps,
                        packetSize=a.packet_size, halfSide=a.half_side, speed=a.speed,
                        mobility=a.mobility, txPower=a.tx_power, output=str(prefix),
                        xml=int(a.xml), pcap=int(a.pcap), visual=int(a.visual))
+        if a.live_udp_port > 0:
+            options.update(liveUdpHost=a.live_udp_host, liveUdpPort=a.live_udp_port)
         target = shlex.join([NAME] + [f'--{k}={v}' for k, v in options.items()])
         command = [sys.executable, str(ns/'waf'), '--run-no-build', target]
         (case/'config.json').write_text(json.dumps({'options':options, 'command':command,
